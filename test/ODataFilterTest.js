@@ -13,4 +13,18 @@ describe('ODataFilter', function(){
       expect(filter.uri).to.eql(this.testURI);
     });
   });
+
+  describe('#filter', function(){
+    beforeEach(function(){
+      this.testURI='http://localhost/api-example'
+      this.filterInstance = new ODataFilter(this.testURI);
+    });
+
+    it('adds filter and query str', function(){
+      let datetimeStr = 'fake datetime string';
+      this.filterInstance.filter({created_at: {eq: datetimeStr}});
+      expect(this.filterInstance.build()).to.eql(
+          `${this.testURI}?$filter=created_at eq ${datetimeStr}`);
+    });
+  });
 });
