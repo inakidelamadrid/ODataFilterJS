@@ -21,6 +21,13 @@ describe('ODataFilter', function(){
       this.datetimeStr    = 'fake datetime string';
     });
 
+    it('doesnt add the query params mark if already included', function(){
+      let URIWithQueryParams = 'http://localhost/api-example?someParam=example';
+      let odata = new ODataFilter(URIWithQueryParams);
+      odata.filter({newParam: {gt: 20}});
+      expect(odata.build()).to.eql(`${URIWithQueryParams} & $filter=newParam gt 20`);
+    });
+
     it('adds filter and query str', function(){
       this.odata.filter({
           created_at: {eq: this.datetimeStr}

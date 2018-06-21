@@ -14,7 +14,8 @@ ODataFilter.prototype.or      = or;
 
 ODataFilter.prototype.build = function(){
   let filterQuery = _.reduce(this.tokens, reduceChain, '');
-  return `${this.uri}?$filter=${filterQuery}`;
+  let filterOpener = this.uri.indexOf('?') > -1 ?  ' & ' : '?';
+  return `${this.uri}${filterOpener}$filter=${filterQuery}`;
 }
 
 module.exports = ODataFilter
