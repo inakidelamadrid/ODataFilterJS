@@ -15,64 +15,76 @@ describe('ODataFilter', function(){
   });
 
   describe('#filter', function(){
-    beforeEach(function(){
-      this.testURI        ='http://localhost/api-example'
-      this.odata = new ODataFilter(this.testURI);
-      this.datetimeStr    = 'fake datetime string';
-    });
+    context('without previous query params', function(){
+        beforeEach(function(){
+          this.testURI        ='http://localhost/api-example'
+          this.odata = new ODataFilter(this.testURI);
+          console.log(this.odata.config);
+          this.datetimeStr    = 'fake datetime string';
+        });
 
-    it('doesnt add the query params mark if already included', function(){
-      let URIWithQueryParams = 'http://localhost/api-example?someParam=example';
-      let odata = new ODataFilter(URIWithQueryParams);
-      odata.filter({newParam: {gt: 20}});
-      expect(odata.build()).to.eql(`${URIWithQueryParams} & $filter=newParam gt 20`);
-    });
+        context('changing the predefined filter key setting', function(){
+          it('sets the correct "filter" key', function(){
+            let URI = 'http://localhost/api-example';
+            let odata = new ODataFilter(URI, {filterParamName: 'filter'});
+            odata.filter({newParam: {gt: 20}});
+            expect(odata.build()).to.eql(`${URI}?filter=newParam gt 20`);
+          });
+        });
+        it('adds filter and query str', function(){
+          this.odata.filter({
+              created_at: {eq: this.datetimeStr}
+          });
+          expect(this.odata.build()).to.eql(
+            `${this.testURI}?$filter=created_at eq ${this.datetimeStr}`);
+        });
 
-    it('adds filter and query str', function(){
-      this.odata.filter({
-          created_at: {eq: this.datetimeStr}
+        it('supports multiple filters on different keys (fields) joined by and', function(){
+          this.odata.filter({
+            createdAt : {eq: this.datetimeStr},
+            visitCount: {gt: 20}
+          });
+
+          expect(this.odata.build()).to.eql(
+              `${this.testURI}?$filter=createdAt eq ${this.datetimeStr} AND visitCount gt 20`);
+
+        });
+
+        it('supports multiple filters on same keys joined by and', function(){
+          this.odata.filter({
+              createdAt : {gt: '2 days ago', lt: 'Today'}
+          });
+
+          expect(this.odata.build()).to.eql(
+              `${this.testURI}?$filter=createdAt gt 2 days ago AND createdAt lt Today`);
+
+        });
+
+        it('supports combined same/different field filters joined by and', function(){
+          this.odata.filter({
+            createdAt : {gt: '2 days ago', lt: 'Today'},
+            visitCount: {gt: 20}
+          });
+
+          expect(this.odata.build()).to.eql(
+              `${this.testURI}?$filter=createdAt gt 2 days ago AND createdAt lt Today AND visitCount gt 20`);
+
+        });
       });
-      expect(this.odata.build()).to.eql(
-        `${this.testURI}?$filter=created_at eq ${this.datetimeStr}`);
-    });
-
-    it('supports multiple filters on different keys (fields) joined by and', function(){
-      this.odata.filter({
-        createdAt : {eq: this.datetimeStr},
-        visitCount: {gt: 20}
+    context('with previous query params', function(){
+      it('doesnt add the query params mark', function(){
+        let URIWithQueryParams = 'http://localhost/api-example?someParam=example';
+        let odata = new ODataFilter(URIWithQueryParams);
+        odata.filter({newParam: {gt: 20}});
+        expect(odata.build()).to.eql(`${URIWithQueryParams} & $filter=newParam gt 20`);
       });
-
-      expect(this.odata.build()).to.eql(
-          `${this.testURI}?$filter=createdAt eq ${this.datetimeStr} AND visitCount gt 20`);
-
-    });
-
-    it('supports multiple filters on same keys joined by and', function(){
-      this.odata.filter({
-          createdAt : {gt: '2 days ago', lt: 'Today'}
-      });
-
-      expect(this.odata.build()).to.eql(
-          `${this.testURI}?$filter=createdAt gt 2 days ago AND createdAt lt Today`);
-
-    });
-
-    it('supports combined same/different field filters joined by and', function(){
-      this.odata.filter({
-        createdAt : {gt: '2 days ago', lt: 'Today'},
-        visitCount: {gt: 20}
-      });
-
-      expect(this.odata.build()).to.eql(
-          `${this.testURI}?$filter=createdAt gt 2 days ago AND createdAt lt Today AND visitCount gt 20`);
-
     });
   });
 
   describe('#and', function(){
     beforeEach(function(){
-      this.testURI        ='http://localhost/api-example'
-      this.odata = new ODataFilter(this.testURI);
+      this.testURI ='http://localhost/api-example'
+      this.odata   = new ODataFilter(this.testURI);
     });
 
     it('chains a filter on one field using AND', function(){
