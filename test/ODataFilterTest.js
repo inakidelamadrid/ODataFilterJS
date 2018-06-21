@@ -50,6 +50,34 @@ describe('ODataFilter', function(){
 
     });
 
+    it('supports combined same/different field filters joined by and', function(){
+      this.filterInstance.filter({
+        createdAt : {gt: '2 days ago', lt: 'Today'},
+        visitCount: {gt: 20}
+      });
 
+      expect(this.filterInstance.build()).to.eql(
+          `${this.testURI}?$filter=createdAt gt 2 days ago AND createdAt lt Today AND visitCount gt 20`);
+
+    });
   });
+
+  describe('#and', function(){
+    beforeEach(function(){
+      this.testURI        ='http://localhost/api-example'
+      this.filterInstance = new ODataFilter(this.testURI);
+    });
+
+    it('chains a filter on one field using AND', function(){
+      filtered = this.filterInstance.filter(
+          {createdAt: {gt: '2 days ago'}}).and({visitCount: {gt: 20}});
+      expect(filtered.build()).to.eql(`${this.testURI}?$filter=createdAt gt 2 days ago AND visitCount gt 20`)
+    });
+
+    it('chains a filter on many fields using AND', function(){
+      filtered = this.filterInstance.filter(
+          {createdAt: {gt: '2 days ago'}}).and({visitCount: {gt: 20}, category: {eq: 'Bussiness'}});
+      expect(filtered.build()).to.eql(`${this.testURI}?$filter=createdAt gt 2 days ago AND visitCount gt 20 AND category eq Bussiness`)
+    });
+  })
 });
