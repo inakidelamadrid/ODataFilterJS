@@ -12,7 +12,7 @@ function processLogicalAndFilterTokens(args, settings){
   let tokens = [];
 
   for(var field in args){
-    tokens.push(tokenizeFieldAndOperators(field, args[field]))
+    tokens.push( tokenizeFieldAndOperators(field, args[field], this.config.comparisonOperators) );
   }
   
   this.tokens.push({

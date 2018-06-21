@@ -15,22 +15,31 @@ describe('ODataFilter', function(){
   });
 
   describe('#filter', function(){
+    context('changing the predefined comparison operator names', function(){
+      it('sets the correct "operators" keys', function(){
+        let URI = 'http://localhost/api-example';
+        let odata = new ODataFilter(URI, {comparisonOperators: {eq: '$eq'}});
+
+        odata.filter({newParam: {eq: 20}});
+        expect(odata.build()).to.eql(`${URI}?$filter=newParam $eq 20`);
+      });
+    });
+
+    context('changing the predefined filter key setting', function(){
+      it('sets the correct "filter" key', function(){
+        let URI = 'http://localhost/api-example';
+        let odata = new ODataFilter(URI, {filterParamName: 'filter'});
+        odata.filter({newParam: {gt: 20}});
+        expect(odata.build()).to.eql(`${URI}?filter=newParam gt 20`);
+      });
+    });
     context('without previous query params', function(){
         beforeEach(function(){
           this.testURI        ='http://localhost/api-example'
           this.odata = new ODataFilter(this.testURI);
-          console.log(this.odata.config);
           this.datetimeStr    = 'fake datetime string';
         });
 
-        context('changing the predefined filter key setting', function(){
-          it('sets the correct "filter" key', function(){
-            let URI = 'http://localhost/api-example';
-            let odata = new ODataFilter(URI, {filterParamName: 'filter'});
-            odata.filter({newParam: {gt: 20}});
-            expect(odata.build()).to.eql(`${URI}?filter=newParam gt 20`);
-          });
-        });
         it('adds filter and query str', function(){
           this.odata.filter({
               created_at: {eq: this.datetimeStr}
