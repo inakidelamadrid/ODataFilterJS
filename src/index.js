@@ -1,13 +1,14 @@
 let _ = require('underscore');
+let {filter, and, or} = require('./filter');
 
 function ODataFilter(uri){
   this.uri = uri;
   this.tokens = []
 }
 
-ODataFilter.prototype.filter  = require('./filter');
-ODataFilter.prototype.and     = require('./and');
-ODataFilter.prototype.or      = require('./or');
+ODataFilter.prototype.filter  = filter;
+ODataFilter.prototype.and     = and;
+ODataFilter.prototype.or      = or;
 
 
 
