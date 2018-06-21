@@ -1,4 +1,5 @@
 let _ = require('underscore');
+let {tokenizeFieldAndOperators} = require('./tokenize')
 
 module.exports = function(args){
   let tokens = [];
@@ -15,11 +16,3 @@ module.exports = function(args){
 
   return this
 };
-
-function tokenizeFieldAndOperators(field, filters){
-  let sameFieldTokens = _.map(_.pairs(filters), function(pair){
-      return `${field} ${pair[0]} ${pair[1]}`; 
-  }, []);
-  
-  return sameFieldTokens.join(' AND ');
-}

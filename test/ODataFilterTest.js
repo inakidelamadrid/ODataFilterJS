@@ -79,5 +79,11 @@ describe('ODataFilter', function(){
           {createdAt: {gt: '2 days ago'}}).and({visitCount: {gt: 20}, category: {eq: 'Bussiness'}});
       expect(filtered.build()).to.eql(`${this.testURI}?$filter=createdAt gt 2 days ago AND visitCount gt 20 AND category eq Bussiness`)
     });
+
+    it('supports AND chained field with many filters', function(){
+      filtered = this.filterInstance.filter(
+          {createdAt: {gt: '2 days ago'}}).and({visitCount: {gt: 20, lt: 100}});
+      expect(filtered.build()).to.eql(`${this.testURI}?$filter=createdAt gt 2 days ago AND visitCount gt 20 AND visitCount lt 100`)
+    });
   })
 });

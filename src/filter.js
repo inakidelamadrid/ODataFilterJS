@@ -1,7 +1,8 @@
-let _ = require('underscore');
+let {tokenizeFieldAndOperators} = require('./tokenize')
 
 
 module.exports = function(args){
+
   let tokens = [];
 
   for(var field in args){
@@ -11,11 +12,3 @@ module.exports = function(args){
   this.tokens.push({'logicalOperator': 'AND', tokens});
   return this
 };
-
-function tokenizeFieldAndOperators(field, filters){
-  let sameFieldTokens = _.map(_.pairs(filters), function(pair){
-      return `${field} ${pair[0]} ${pair[1]}`; 
-  }, []);
-  
-  return sameFieldTokens.join(' AND ');
-}
