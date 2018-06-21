@@ -5,8 +5,9 @@ function ODataFilter(uri){
   this.tokens = []
 }
 
-ODataFilter.prototype.filter = require('./filter');
-ODataFilter.prototype.and = require('./and');
+ODataFilter.prototype.filter  = require('./filter');
+ODataFilter.prototype.and     = require('./and');
+ODataFilter.prototype.or      = require('./or');
 
 
 
