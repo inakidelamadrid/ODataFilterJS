@@ -3,11 +3,14 @@ let ODataFilter = require('../src');
 
 
 describe('ODataFilter', function(){
-  describe('#pit', function(){
+  before(function(){
+    this.testURI='http://localhost/api-example'
+  });
 
-    it('should say pit', function(){
-      let filter = new ODataFilter();
-      expect(filter.pit()).to.eql('pit');
+  describe('#new', function(){
+    it('should keep the URI arg in the object', function(){
+      let filter = new ODataFilter(this.testURI);
+      expect(filter.uri).to.eql(this.testURI);
     });
   });
 });
