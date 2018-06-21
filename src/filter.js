@@ -1,16 +1,21 @@
 let _ = require('underscore');
-let {extend}  = require("./utils");
 
 
 module.exports = function(args){
+  let tokens = [];
 
   for(var field in args){
-    this.tokens.push(tokenizeFieldAndOperators(field, args[field]));
+    tokens.push(tokenizeFieldAndOperators(field, args[field]))
   }
+  
+  this.tokens.push({'logicalOperator': 'AND', tokens});
+  return this
 };
 
 function tokenizeFieldAndOperators(field, filters){
-  return _.map(_.pairs(filters), function(pair){
+  let sameFieldTokens = _.map(_.pairs(filters), function(pair){
       return `${field} ${pair[0]} ${pair[1]}`; 
   }, []);
+  
+  return sameFieldTokens.join(' AND ');
 }

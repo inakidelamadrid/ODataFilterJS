@@ -16,15 +16,40 @@ describe('ODataFilter', function(){
 
   describe('#filter', function(){
     beforeEach(function(){
-      this.testURI='http://localhost/api-example'
+      this.testURI        ='http://localhost/api-example'
       this.filterInstance = new ODataFilter(this.testURI);
+      this.datetimeStr    = 'fake datetime string';
     });
 
     it('adds filter and query str', function(){
-      let datetimeStr = 'fake datetime string';
-      this.filterInstance.filter({created_at: {eq: datetimeStr}});
+      this.filterInstance.filter({
+          created_at: {eq: this.datetimeStr}
+      });
       expect(this.filterInstance.build()).to.eql(
-          `${this.testURI}?$filter=created_at eq ${datetimeStr}`);
+        `${this.testURI}?$filter=created_at eq ${this.datetimeStr}`);
     });
+
+    it('supports multiple filters on different keys (fields) joined by and', function(){
+      this.filterInstance.filter({
+        createdAt : {eq: this.datetimeStr},
+        visitCount: {gt: 20}
+      });
+
+      expect(this.filterInstance.build()).to.eql(
+          `${this.testURI}?$filter=createdAt eq ${this.datetimeStr} AND visitCount gt 20`);
+
+    });
+
+    it('supports multiple filters on same keys joined by and', function(){
+      this.filterInstance.filter({
+          createdAt : {gt: '2 days ago', lt: 'Today'}
+      });
+
+      expect(this.filterInstance.build()).to.eql(
+          `${this.testURI}?$filter=createdAt gt 2 days ago AND createdAt lt Today`);
+
+    });
+
+
   });
 });

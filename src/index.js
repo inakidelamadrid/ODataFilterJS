@@ -9,9 +9,10 @@ ODataFilter.prototype.filter = require('./filter');
 
 
 ODataFilter.prototype.build = function(){
-  let tokens = _.flatten(this.tokens);
+  let target = this.tokens[0]
+  let filterQuery = target.tokens.join(' ' + target.logicalOperator + ' ');
 
-  return `${this.uri}?$filter=${tokens.join(' ')}`;
+  return `${this.uri}?$filter=${filterQuery}`;
 }
 
 module.exports = ODataFilter
